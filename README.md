@@ -1,4 +1,4 @@
-# Chocolatey Diff functionality
+# Chocolatey Diff utility
 
 This Powershell module allows you to view the diff of two package versions.
 
