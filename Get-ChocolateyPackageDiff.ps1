@@ -44,7 +44,7 @@ function Get-ChocolateyPackageDiff {
         [parameter(Mandatory = $true, Position = 0)][string] $packageName,
         [parameter(Mandatory = $true, Position = 1)][string] $oldPackageVersion,
         [parameter(Mandatory = $true, Position = 2)][string] $newPackageVersion,
-        [parameter(Mandatory = $false)][string] $downloadLocation = $env:Temp,
+        [parameter(Mandatory = $false)][string] $downloadLocation = $(Get-TempPath),
         [parameter(Mandatory = $false)][switch] $keepFiles = $false,
         [parameter(Mandatory = $false)][switch] $useBeyondCompare = $false
     )
@@ -67,8 +67,8 @@ function Get-ChocolateyPackageDiff {
     if (-Not $useBeyondCompare) {
 
         #Extract the package files
-        Expand-Archive -Path $oldFileName -DestinationPath $oldExtractPath -Force
-        Expand-Archive -Path $newFileName -DestinationPath $newExtractPath -Force
+        Expand-ArchiveEx -Path $oldFileName -DestinationPath $oldExtractPath -Force
+        Expand-ArchiveEx -Path $newFileName -DestinationPath $newExtractPath -Force
         [System.Collections.ArrayList]$oldItems = (Get-ChildItem -Exclude $ignoreList -Path $oldExtractPath | Get-ChildItem -Recurse -File | Select-Object -Expand FullName)
         [System.Collections.ArrayList]$newItems = (Get-ChildItem -Exclude $ignoreList -Path $newExtractPath | Get-ChildItem -Recurse -File | Select-Object -Expand FullName)
        
@@ -89,8 +89,7 @@ function Get-ChocolateyPackageDiff {
             }
 
             Write-Host "Diff for ${file}:"
-            Start-Process -NoNewWindow -Wait -FilePath "C:\Program Files\KDiff3\bin\diff.exe" -ArgumentList "${oldItem}", "${newItem}"
-
+            Invoke-DiffTool -Path1 $oldItem -Path2 $newItem
             while ($newItems -contains $newItem) {
                 $newItems.Remove($newItem)
             }

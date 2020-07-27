@@ -2,12 +2,33 @@
 
 This Powershell module allows you to view the diff of two package versions.
 
-This software requires to have kdiff3 package installed:
+## Requirements - diff tool
+
+This software requires you to have some diff-tool (such as kdiff3 or meld) package installed:
+You can always specify the the diff-tool to use manually by utilizing the `env:difftool` variable.
+
+**On Windows:**
+
 ```powershell
 choco install kdiff3
 ```
 
+**On Linux/Mac** ensure at least `diff` and `unzip` are installed and available through PATH environment variable.
+
+If you want to use a different diff-tool, set `env:difftool`:
+
+```powershell
+$env:difftool = "C:\Program Files (x86)\Meld\meld.exe"
+Import-Module .\chocolatey-diff.psm1
+Get-ChocolateyPackageDiff ...
+```
+
+By default, `C:\Program Files\KDiff3\bin\diff.exe` is used on Windows OS and `diff` on Unix-like systems.
+
+## Example / Usage
+
 Example output:
+
 ```powershell
 Import-Module .\chocolatey-diff.psm1
 D:\Projects\chocodiff [master ≡ +5 ~0 -0 !]> Get-ChocolateyPackageDiff -packageName grafana -oldPackageVersion 7.1.0 -newPackageVersion 7.1.1
