@@ -1,10 +1,10 @@
 function Get-ChocolateyPackageDiff {
     <#
 .SYNOPSIS
-    Downloads a version of a Chocolatey package.
+    Shows the diff of two packages
 
 .DESCRIPTION
-    This will try and download a version of a Chocolatey package.
+    This will try and download two versions of a Chocolatey package, and compare the package contents.
 
 .NOTES
     Chocolatey is copyrighted by its rightful owners. See: https://chocolatey.org
@@ -16,13 +16,13 @@ function Get-ChocolateyPackageDiff {
     None
 
 .PARAMETER PackageName
-    The name of the package to Download
+    The name of the package to Compare
 
 .PARAMETER OldPackageVersion
-    The old version of the package to Download
+    The old version of the package to Compare
 
 .PARAMETER NewPackageVersion
-    The new version of the package to Download
+    The new version of the package to Compare
 
 .PARAMETER DownloadLocation
     OPTIONAL - The folder to download the file to.
