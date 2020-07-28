@@ -59,7 +59,8 @@ function Get-ChocolateyPackage {
         Remove-Item $fileName -Force
     }
 
-    $downloadUrl = "https://chocolatey.org/api/v2/package/${packageName}/${packageVersion}"
+    $repoBaseUrl = Get-ChocolateyRepositoryUrl
+    $downloadUrl = "${repoBaseUrl}/${packageName}/${packageVersion}"
 
     #Download the file
     Write-Warning "Downloading file from ${downloadUrl}"
