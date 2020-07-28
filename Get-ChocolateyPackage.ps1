@@ -37,7 +37,7 @@ function Get-ChocolateyPackage {
     param(
         [parameter(Mandatory = $true, Position = 0)][string] $packageName,
         [parameter(Mandatory = $true, Position = 1)][string] $packageVersion,
-        [parameter(Mandatory = $false)][string] $downloadLocation = $env:Temp,
+        [parameter(Mandatory = $false)][string] $downloadLocation = $(Get-TempPath),
         [parameter(Mandatory = $false)][switch] $useZipExtension = $false
     )
 
