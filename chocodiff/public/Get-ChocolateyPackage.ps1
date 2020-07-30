@@ -60,7 +60,7 @@ function Get-ChocolateyPackage {
     }
 
     $repoBaseUrl = Get-ChocolateyRepositoryUrl
-    $downloadUrl = "${repoBaseUrl}/${packageName}/${packageVersion}"
+    $downloadUrl = "${repoBaseUrl}/package/${packageName}/${packageVersion}"
 
     #Download the file
     Write-Warning "Downloading file from ${downloadUrl}"

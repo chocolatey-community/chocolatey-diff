@@ -27,7 +27,7 @@ By default, `C:\Program Files\KDiff3\bin\diff.exe` is used on Windows OS and `di
 
 ## Example / Usage
 
-Example output:
+### Example: exact source and target version given
 
 ```powershell
 Import-Module .\chocodiff\chocolatey-diff.psm1
@@ -56,5 +56,34 @@ Diff for \grafana.nuspec:
 ---
 >     <version>7.1.1</version>
 WARNING: \tools\grafana-7.1.1.windows-amd64.zip is binary, ignoring.
+WARNING: Deleting downloaded files
+```
+
+### Example: single package ID as input
+
+Latest approved and unapproved versions are selected automatically.
+
+```powershell
+Import-Module .\chocodiff\chocolatey-diff.psm1
+chocodiff on  gh8_versiondetect [✘!?] took 44s
+❯ Get-ChocolateyPackageDiff elasticsearch
+WARNING: Downloading file from https://chocolatey.org/api/v2//package/elasticsearch/6.7.1
+WARNING: Downloading file from https://chocolatey.org/api/v2//package/elasticsearch/7.8.1
+Diff for \tools\chocolateyBeforeModify.ps1:
+1c1
+< elasticsearch-service.bat stop
+---
+> 2a3,10
+>
+> $toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
+> $unPath = Join-Path $toolsDir 'Uninstall-ChocolateyPath.psm1'
+> Import-Module $unPath
+>
+> $version      = "7.8.1"
+> $binPath = Join-Path $toolsDir "elasticsearch-$($version)\bin"
+> Uninstall-ChocolateyPath $binPath 'Machine'
+...
+...
+WARNING: The \tools\Uninstall-ChocolateyPath.psm1 is new. Manual verification required
 WARNING: Deleting downloaded files
 ```
