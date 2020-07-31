@@ -1,4 +1,5 @@
-<#
+function Test-IsUnix {
+    <#
 .SYNOPSIS
     Check if on Unix OS or not
 
@@ -14,6 +15,5 @@
     PS ~MACgary> Test-IsUnix
     $true
 #>
-function Test-IsUnix {
     $PSVersionTable.Platform -eq "Unix"
 }

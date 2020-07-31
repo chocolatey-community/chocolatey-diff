@@ -2,6 +2,19 @@
 # Apache-2.0 License
 
 function Get-VersionData {
+      <#
+.SYNOPSIS
+    Get information about a specific package version
+
+.DESCRIPTION
+    Get package 
+    * `version` as [SemanticVersion]
+    * `status` in moderation queue
+    * `listed` - the visibility on the repository site
+
+.PARAMETER PackageName
+    The Id of the package
+#>
     param(
         [Parameter(Mandatory = $true)]
         [string]$packageName,
