@@ -42,7 +42,7 @@ function Get-ChocolateyPackageDiff {
         [parameter(Mandatory = $true, Position = 1)][string] $oldPackageVersion,
         [parameter(Mandatory = $true, Position = 2)][string] $newPackageVersion,
         [parameter(Mandatory = $false)][string] $downloadLocation = $(Get-TempPath),
-        [parameter(Mandatory = $false)][switch] $keepFiles = $false,
+        [parameter(Mandatory = $false)][switch] $keepFiles = $false
     )
     $currentProgressPreference = $ProgressPreference
     $ProgressPreference = 'SilentlyContinue'
