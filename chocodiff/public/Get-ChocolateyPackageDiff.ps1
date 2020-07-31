@@ -32,9 +32,6 @@ function Get-ChocolateyPackageDiff {
 .PARAMETER KeepFiles
     OPTIONAL - Keep the downloaded files
 
-.PARAMETER UseBeyondCompare
-    OPTIONAL - Requires Beyond Compare 4 to be installed in the default location.
-
 .EXAMPLE
     >
     Get-ChocolateyPackageDiff -packageName chocolatey -oldPackageVersion 0.10.14 -newPackageVersion 0.10.15
@@ -46,7 +43,6 @@ function Get-ChocolateyPackageDiff {
         [parameter(Mandatory = $true, Position = 2)][string] $newPackageVersion,
         [parameter(Mandatory = $false)][string] $downloadLocation = $(Get-TempPath),
         [parameter(Mandatory = $false)][switch] $keepFiles = $false,
-        [parameter(Mandatory = $false)][switch] $useBeyondCompare = $false
     )
     $currentProgressPreference = $ProgressPreference
     $ProgressPreference = 'SilentlyContinue'
@@ -64,54 +60,46 @@ function Get-ChocolateyPackageDiff {
 
     $nonPrintable = [char[]] (0..8 + 10..31 + 127 + 129 + 141 + 143 + 144 + 157)
 
-    if (-Not $useBeyondCompare) {
+    #Extract the package files
+    Expand-ArchiveEx -Path $oldFileName -DestinationPath $oldExtractPath -Force
+    Expand-ArchiveEx -Path $newFileName -DestinationPath $newExtractPath -Force
+    [System.Collections.ArrayList]$oldItems = (Get-ChildItem -Exclude $ignoreList -Path $oldExtractPath | Get-ChildItem -Recurse -File | Select-Object -Expand FullName)
+    [System.Collections.ArrayList]$newItems = (Get-ChildItem -Exclude $ignoreList -Path $newExtractPath | Get-ChildItem -Recurse -File | Select-Object -Expand FullName)
+    
+    ForEach ($oldItem in $oldItems) {
+        $file = $oldItem -replace [Regex]::Escape("${oldExtractPath}")
 
-        #Extract the package files
-        Expand-ArchiveEx -Path $oldFileName -DestinationPath $oldExtractPath -Force
-        Expand-ArchiveEx -Path $newFileName -DestinationPath $newExtractPath -Force
-        [System.Collections.ArrayList]$oldItems = (Get-ChildItem -Exclude $ignoreList -Path $oldExtractPath | Get-ChildItem -Recurse -File | Select-Object -Expand FullName)
-        [System.Collections.ArrayList]$newItems = (Get-ChildItem -Exclude $ignoreList -Path $newExtractPath | Get-ChildItem -Recurse -File | Select-Object -Expand FullName)
-       
-        ForEach ($oldItem in $oldItems) {
-            $file = $oldItem -replace [Regex]::Escape("${oldExtractPath}")
+        $newItem = $oldItem -replace $oldPackageVersion, $newPackageVersion
 
-            $newItem = $oldItem -replace $oldPackageVersion, $newPackageVersion
-
-            $lines = Get-Content $oldItem -ErrorAction Ignore -TotalCount 5
-            $result = @($lines | Where-Object { $_.IndexOfAny($nonPrintable) -ge 0 })
-            if ($result.Count -gt 0) {
-                Write-Warning "${file} is binary, ignoring." 
-                Continue
-            }
-
-            if (-Not (Test-Path $newItem -PathType Leaf)) {
-                Write-Warning "${file} does not exist in the new package"
-            }
-
-            Write-Host "Diff for ${file}:"
-            Invoke-DiffTool -Path1 $oldItem -Path2 $newItem
-            while ($newItems -contains $newItem) {
-                $newItems.Remove($newItem)
-            }
+        $lines = Get-Content $oldItem -ErrorAction Ignore -TotalCount 5
+        $result = @($lines | Where-Object { $_.IndexOfAny($nonPrintable) -ge 0 })
+        if ($result.Count -gt 0) {
+            Write-Warning "${file} is binary, ignoring." 
+            Continue
         }
 
-        ForEach ($newItem in $newItems) {
-            $file = $newItem -replace [Regex]::Escape("${newExtractPath}")
-
-            $lines = Get-Content $newItem -ErrorAction Ignore -TotalCount 5
-            $result = @($lines | Where-Object { $_.IndexOfAny($nonPrintable) -ge 0 })
-            if ($result.Count -gt 0) {
-                Write-Warning "${file} is binary, ignoring." 
-                Continue
-            }
-
-            Write-Warning "The ${file} is new. Manual verification required"
+        if (-Not (Test-Path $newItem -PathType Leaf)) {
+            Write-Warning "${file} does not exist in the new package"
         }
 
+        Write-Host "Diff for ${file}:"
+        Invoke-DiffTool -Path1 $oldItem -Path2 $newItem
+        while ($newItems -contains $newItem) {
+            $newItems.Remove($newItem)
+        }
     }
-    else {
-        $bcompare = "C:\Program Files\Beyond Compare 4\BCompare.exe"
-        Start-Process -NoNewWindow -Wait -FilePath $bcompare -ArgumentList "${oldFileName}", "${newFileName}"
+
+    ForEach ($newItem in $newItems) {
+        $file = $newItem -replace [Regex]::Escape("${newExtractPath}")
+
+        $lines = Get-Content $newItem -ErrorAction Ignore -TotalCount 5
+        $result = @($lines | Where-Object { $_.IndexOfAny($nonPrintable) -ge 0 })
+        if ($result.Count -gt 0) {
+            Write-Warning "${file} is binary, ignoring." 
+            Continue
+        }
+
+        Write-Warning "The ${file} is new. Manual verification required"
     }
 
     if (-Not $keepFiles) {
