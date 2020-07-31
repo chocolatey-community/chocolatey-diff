@@ -47,7 +47,7 @@ function Get-ChocolateyPackage {
 
 
     if (-Not (Test-Path -Path $downloadLocation -PathType Container)) {
-        New-Item -Path $downloadLocation -ItemType Directory
+        New-Item -Path $downloadLocation -ItemType Directory | Out-Null
     }
 
     $extension = If ($useZipExtension) {"zip"} Else {"nupkg"}
