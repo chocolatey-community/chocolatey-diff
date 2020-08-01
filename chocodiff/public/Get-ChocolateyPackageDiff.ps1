@@ -39,13 +39,31 @@ function Get-ChocolateyPackageDiff {
 #>
     param(
         [parameter(Mandatory = $true, Position = 0)][string] $packageName,
-        [parameter(Mandatory = $true, Position = 1)][string] $oldPackageVersion,
-        [parameter(Mandatory = $true, Position = 2)][string] $newPackageVersion,
+        [parameter(Mandatory = $false, Position = 1)][string] $oldPackageVersion,
+        [parameter(Mandatory = $false, Position = 2)][string] $newPackageVersion,
         [parameter(Mandatory = $false)][string] $downloadLocation = $(Get-TempPath),
         [parameter(Mandatory = $false)][switch] $keepFiles = $false
     )
     $currentProgressPreference = $ProgressPreference
     $ProgressPreference = 'SilentlyContinue'
+
+    if (-Not $oldPackageVersion) {
+        $pkg = Get-LatestApprovedPackageVersion -PackageId $packageName
+        $oldPackageVersion = $pkg.Version
+        Write-Verbose "dynamically determined oldPackageVersion: '$oldPackageVersion'"
+    }
+    if (-Not $oldPackageVersion) {
+        throw "unable to diff without 'oldPackageVersion'"
+    }
+    if (-Not $newPackageVersion) {
+        $pkg = Get-LatestUnapprovedPackageVersion -PackageId $packageName
+        $newPackageVersion = $pkg.Version
+        Write-Verbose "dynamically determined newPackageVersion: '$newPackageVersion'"
+    }
+    if (-Not $newPackageVersion) {
+        throw "unable to diff without 'newPackageVersion'"
+    }
+
     
     $oldFileName = Join-Path $downloadLocation "${packageName}.${oldPackageVersion}.zip"
     $newFileName = Join-Path $downloadLocation "${packageName}.${newPackageVersion}.zip"
