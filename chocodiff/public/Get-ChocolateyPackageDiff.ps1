@@ -76,8 +76,6 @@ function Get-ChocolateyPackageDiff {
     Get-ChocolateyPackage -packageName $packageName -packageVersion $oldPackageVersion -useZipExtension
     Get-ChocolateyPackage -packageName $packageName -packageVersion $newPackageVersion -useZipExtension
 
-    $nonPrintable = [char[]] (0..8 + 10..31 + 127 + 129 + 141 + 143 + 144 + 157)
-
     #Extract the package files
     Expand-ArchiveEx -Path $oldFileName -DestinationPath $oldExtractPath -Force
     Expand-ArchiveEx -Path $newFileName -DestinationPath $newExtractPath -Force
@@ -89,9 +87,7 @@ function Get-ChocolateyPackageDiff {
 
         $newItem = $oldItem -replace $oldPackageVersion, $newPackageVersion
 
-        $lines = Get-Content $oldItem -ErrorAction Ignore -TotalCount 5
-        $result = @($lines | Where-Object { $_.IndexOfAny($nonPrintable) -ge 0 })
-        if ($result.Count -gt 0) {
+        if (Test-IsBinary -Path $oldItem) {
             Write-Warning "${file} is binary, ignoring." 
             Continue
         }
@@ -110,9 +106,7 @@ function Get-ChocolateyPackageDiff {
     ForEach ($newItem in $newItems) {
         $file = $newItem -replace [Regex]::Escape("${newExtractPath}")
 
-        $lines = Get-Content $newItem -ErrorAction Ignore -TotalCount 5
-        $result = @($lines | Where-Object { $_.IndexOfAny($nonPrintable) -ge 0 })
-        if ($result.Count -gt 0) {
+        if (Test-IsBinary -Path $newItem) {
             Write-Warning "${file} is binary, ignoring." 
             Continue
         }
