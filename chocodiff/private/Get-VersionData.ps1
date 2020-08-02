@@ -2,7 +2,7 @@
 # Apache-2.0 License
 
 function Get-VersionData {
-      <#
+    <#
 .SYNOPSIS
     Get information about a specific package version
 

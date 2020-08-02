@@ -50,7 +50,7 @@ function Get-ChocolateyPackage {
         New-Item -Path $downloadLocation -ItemType Directory | Out-Null
     }
 
-    $extension = If ($useZipExtension) {"zip"} Else {"nupkg"}
+    $extension = If ($useZipExtension) { "zip" } Else { "nupkg" }
 
     $fileName = Join-Path $downloadLocation "${packageName}.${packageVersion}.${extension}"
 
