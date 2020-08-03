@@ -19,7 +19,7 @@ If you want to use a different diff-tool, set `env:difftool`:
 
 ```powershell
 $env:difftool = "C:\Program Files (x86)\Meld\meld.exe"
-Import-Module .\chocodiff\chocolatey-diff.psm1
+Import-Module .\chocolatey-diff\chocolatey-diff.psm1
 Get-ChocolateyPackageDiff ...
 ```
 
@@ -30,8 +30,8 @@ By default, `C:\Program Files\KDiff3\bin\diff.exe` is used on Windows OS and `di
 ### Example: exact source and target version given
 
 ```powershell
-Import-Module .\chocodiff\chocolatey-diff.psm1
-D:\Projects\chocodiff [master ≡ +5 ~0 -0 !]> Get-ChocolateyPackageDiff -packageName grafana -oldPackageVersion 7.1.0 -newPackageVersion 7.1.1
+Import-Module .\chocolatey-diff\chocolatey-diff.psm1
+D:\Projects\chocolatey-diff [master ≡ +5 ~0 -0 !]> Get-ChocolateyPackageDiff -packageName grafana -oldPackageVersion 7.1.0 -newPackageVersion 7.1.1
 WARNING: Downloading file from https://chocolatey.org/api/v2/package/grafana/7.1.0
 WARNING: Downloading file from https://chocolatey.org/api/v2/package/grafana/7.1.1
 Diff for \legal\LICENSE.txt:
@@ -64,8 +64,8 @@ WARNING: Deleting downloaded files
 Latest approved and unapproved versions are selected automatically.
 
 ```powershell
-Import-Module .\chocodiff\chocolatey-diff.psm1
-chocodiff on  gh8_versiondetect [✘!?] took 44s
+Import-Module .\chocolatey-diff\chocolatey-diff.psm1
+chocolatey-diff on  gh8_versiondetect [✘!?] took 44s
 ❯ Get-ChocolateyPackageDiff elasticsearch
 WARNING: Downloading file from https://chocolatey.org/api/v2//package/elasticsearch/6.7.1
 WARNING: Downloading file from https://chocolatey.org/api/v2//package/elasticsearch/7.8.1
