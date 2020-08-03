@@ -14,6 +14,12 @@ function Get-VersionData {
 
 .PARAMETER PackageName
     The Id of the package
+
+.OUTPUTS
+    VersionData object with all known data for a specific version
+
+.EXAMPLE
+    PS > Get-VersionData -packageName chocolatey -version 0.10.15
 #>
     param(
         [Parameter(Mandatory = $true)]

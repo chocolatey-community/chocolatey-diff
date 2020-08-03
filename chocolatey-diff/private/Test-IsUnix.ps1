@@ -12,6 +12,7 @@ function Test-IsUnix {
     PS C:\maurice> Test-IsUnix
     $false
 
+.EXAMPLE
     PS ~MACgary> Test-IsUnix
     $true
 #>
