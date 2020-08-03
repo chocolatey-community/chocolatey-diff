@@ -18,5 +18,5 @@ function Get-ChocolateyRepositoryUrl {
     PS > Get-ChocolateyRepositoryUrl
     https://chocolatey.org/api/v2/
 #>
-    "https://chocolatey.org/api/v2/"
+    if ($env:repositoryUrl) { $env:repositoryUrl } else { "https://chocolatey.org/api/v2/" }
 }

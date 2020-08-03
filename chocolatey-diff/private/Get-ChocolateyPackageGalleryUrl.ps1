@@ -18,5 +18,5 @@ function Get-ChocolateyPackageGalleryUrl {
     PS > Get-ChocolateyPackageGalleryUrl
     https://chocolatey.org/packages
 #>
-    "https://chocolatey.org/packages"
+    if ($env:galleryUrl) { $env:galleryUrl } else { "https://chocolatey.org/packages" }
 }
