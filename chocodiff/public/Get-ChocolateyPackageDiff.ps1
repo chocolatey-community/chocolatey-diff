@@ -77,8 +77,8 @@ function Get-ChocolateyPackageDiff {
     Get-ChocolateyPackage -packageName $packageName -packageVersion $newPackageVersion -useZipExtension
 
     #Extract the package files
-    Expand-ArchiveEx -Path $oldFileName -DestinationPath $oldExtractPath -Force
-    Expand-ArchiveEx -Path $newFileName -DestinationPath $newExtractPath -Force
+    Expand-Archive -Path $oldFileName -DestinationPath $oldExtractPath -Force
+    Expand-Archive -Path $newFileName -DestinationPath $newExtractPath -Force
     [System.Collections.ArrayList]$oldItems = (Get-ChildItem -Exclude $ignoreList -Path $oldExtractPath | Get-ChildItem -Recurse -File | Select-Object -Expand FullName)
     [System.Collections.ArrayList]$newItems = (Get-ChildItem -Exclude $ignoreList -Path $newExtractPath | Get-ChildItem -Recurse -File | Select-Object -Expand FullName)
     
