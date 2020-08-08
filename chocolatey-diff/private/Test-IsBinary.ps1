@@ -29,7 +29,7 @@ param (
     [string] $Path
 )
     $nonPrintable = [char[]] (0..8 + 10..31 + 127 + 129 + 141 + 143 + 144 + 157)
-    $lines = Get-Content $Path -ErrorAction Ignore -TotalCount 5
+    $lines = Get-Content -Path $Path -ErrorAction Ignore -TotalCount 5
     $result = @($lines | Where-Object { $_.IndexOfAny($nonPrintable) -ge 0 })
 
     $result.Count -gt 0
