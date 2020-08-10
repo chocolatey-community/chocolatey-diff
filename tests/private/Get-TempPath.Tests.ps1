@@ -12,5 +12,4 @@ Describe "Get-TempPath tests" {
             }
         }
     }
-
 }

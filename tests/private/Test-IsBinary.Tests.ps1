@@ -19,5 +19,4 @@ Describe "Test-IsBinary tests" {
             }
         }
     }
-
 }
