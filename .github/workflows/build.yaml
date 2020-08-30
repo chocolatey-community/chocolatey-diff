@@ -1,0 +1,37 @@
+---
+
+name: build
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install software
+        run: |
+          ./build/Install.ps1
+        shell: pwsh
+
+      - name: Run Pester
+        run: |
+          ./build/Test.ps1
+        shell: pwsh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: pester-results-${{ matrix.os }}
+          path: ./*.xml
+
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v1
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     file: ./jacoco-results.xml
+      #     fail_ci_if_error: true # optional (default = false)

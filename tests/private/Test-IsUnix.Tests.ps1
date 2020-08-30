@@ -4,7 +4,6 @@ Get-Module chocolatey-diff | Remove-Module -Force
 
 Import-Module $here\..\..\chocolatey-diff\chocolatey-diff.psm1 -Force
 
-
 Describe "Test-IsUnix tests" {
     InModuleScope chocolatey-diff {
         Context 'Test-IsUnix Tests' {

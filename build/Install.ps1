@@ -1,14 +1,11 @@
 Write-Host 'Running install script' -ForegroundColor Yellow
 
-Write-Host 'Installing NuGet PackageProvider'
-$pkg = Install-PackageProvider -Name NuGet -Force -ErrorAction Stop
-Write-Host "Installed NuGet version '$($pkg.version)'"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-Install-Module -Name 'PSScriptAnalyzer' -Repository PSGallery -Force -ErrorAction Stop
-Install-Module -Name 'Pester' -SkipPublisherCheck -Repository PSGallery -Force -ErrorAction Stop
+Get-PackageSource -Name PSGallery | Set-PackageSource -Trusted -Force -ForceBootstrap
 
-Write-Host 'Updating PSModulePath for testing'
-$env:PSModulePath = $env:PSModulePath + ";" + "C:\projects"
+Install-Module -Name 'PSScriptAnalyzer' -Force
+Install-Module -Name 'Pester' -Force
 
 $RequiredModules  = 'PSScriptAnalyzer','Pester'
 $InstalledModules = Get-Module -Name $RequiredModules -ListAvailable
