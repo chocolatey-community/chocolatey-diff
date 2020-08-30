@@ -13,10 +13,5 @@ function Get-TempPath {
     PS > Get-TempPath
     C:\Users\[username]]\AppData\Local\Temp\chocodiff
 #>
-    if (Test-IsUnix) {
-        "/tmp/chocodiff"
-    }
-    else {
-        Join-Path $env:Temp "chocodiff"
-    }
+    Join-Path ([System.IO.Path]::GetTempPath()) "chocodiff"
 }

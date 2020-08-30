@@ -8,15 +8,11 @@ Describe "Get-TempPath tests" {
     InModuleScope chocolatey-diff {
         Context 'Get-TempPath Tests' {
             $testCases = @(
-                @{ Platform = 'Win32NT'; Expected = Join-Path $env:Temp "chocodiff" }
-                @{ Platform = 'Unix'; Expected = "/tmp/chocodiff" }
+                @{ Expected = Join-Path ([System.IO.Path]::GetTempPath()) "chocodiff" }
             )
-            It "Checks if Temp folder for <Platform> is <Expected>" -TestCases $testCases {
-                Param($Platform, $Expected)
-                $CurrentPlatform = $PSVersionTable.Platform
-                $PSVersionTable.Platform = $Platform
+            It "Checks if Temp folder is <Expected>" -TestCases $testCases {
+                Param($Expected)
                 Get-TempPath | Should -BeExactly $Expected
-                $PSVersionTable.Platform = $CurrentPlatform
             }
         }
     }
