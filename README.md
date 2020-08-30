@@ -1,4 +1,4 @@
-![build](https://github.com/chocolatey-community/chocodiff/workflows/build/badge.svg)
+[![build](https://github.com/chocolatey-community/chocodiff/workflows/build/badge.svg)](https://github.com/chocolatey-community/chocodiff/actions?query=workflow%3Abuild)
 
 # Chocolatey Diff utility
 
