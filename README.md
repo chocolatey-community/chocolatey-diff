@@ -1,3 +1,5 @@
+![build](https://github.com/chocolatey-community/chocodiff/workflows/build/badge.svg)
+
 # Chocolatey Diff utility
 
 This Powershell module allows you to view the diff of two package versions.
