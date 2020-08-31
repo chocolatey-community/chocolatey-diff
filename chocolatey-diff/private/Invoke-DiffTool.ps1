@@ -39,5 +39,5 @@ function Invoke-DiffTool {
         "C:\Program Files\KDiff3\bin\diff.exe"
     }
     Write-Verbose "using difftool: $diffTool"
-    Start-Process -NoNewWindow -Wait -FilePath $diffTool -ArgumentList "${oldItem}", "${newItem}"  
+    Start-Process -NoNewWindow -Wait -FilePath $diffTool -ArgumentList "${Path1}", "${Path2}"  
 }
