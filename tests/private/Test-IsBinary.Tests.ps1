@@ -8,11 +8,11 @@ Describe "Test-IsBinary tests" {
         $testCases = @(
             @{
                 Expected = $false;
-                File = If (![string]::IsNullOrEmpty($env:windir)) { Join-Path -Path $env:windir -ChildPath "win.ini" } else { '/etc/hosts' };
+                File = $env:windir ? (Join-Path -Path $env:windir -ChildPath "win.ini") : '/etc/hosts'
             }
             @{
                 Expected = $true;
-                File = If (![string]::IsNullOrEmpty($env:windir)) { Join-Path -Path $env:windir -ChildPath "notepad.exe" } else { '/bin/cat' };
+                File = $env:windir ? (Join-Path -Path $env:windir -ChildPath "notepad.exe") : '/bin/cat'
             }
         )
         #endregion Discovery
