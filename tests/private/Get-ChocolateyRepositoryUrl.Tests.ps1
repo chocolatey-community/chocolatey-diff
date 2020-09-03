@@ -2,6 +2,10 @@
 
 Describe "Get-ChocolateyRepositoryUrl tests" {
 
+    AfterAll {
+        Remove-Item Env:\repositoryUrl -ErrorAction SilentlyContinue
+    }
+
     Context 'Get-ChocolateyRepositoryUrl Tests' {
 
         #region Discovery

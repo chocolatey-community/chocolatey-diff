@@ -2,6 +2,10 @@
 
 Describe "Get-ChocolateyPackageGalleryUrl tests" {
 
+    AfterAll {
+        Remove-Item Env:\galleryUrl -ErrorAction SilentlyContinue
+    }
+
     Context 'Get-ChocolateyPackageGalleryUrl Tests' {
 
         #region Discovery

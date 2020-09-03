@@ -8,6 +8,7 @@ Describe "Invoke-DiffTool tests" {
 
     AfterAll {
         $PSVersionTable.Platform = $CurrentPlatform
+        Remove-Item Env:\difftool -ErrorAction SilentlyContinue
     }
 
     Context 'Invoke-DiffTool Tests' {
