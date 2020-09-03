@@ -7,7 +7,7 @@ function Get-VersionData {
     Get information about a specific package version
 
 .DESCRIPTION
-    Get package 
+    Get package
     * `version` as [SemanticVersion]
     * `status` in moderation queue
     * `listed` - the visibility on the repository site
@@ -44,7 +44,7 @@ function Get-VersionData {
     }
 
     $properties = $packagePage.entry.properties
-    $versionData.url = $properties.GalleryDetailsUrl
+    $versionData.url = ($properties.GalleryDetailsUrl) ? $properties.GalleryDetailsUrl : "$(Get-ChocolateyPackageGalleryUrl)/${packageName}/$($version.Raw)"
     $isApproved = $properties.IsApproved.InnerText
     if (-Not $isApproved) {
         $isApproved = "false"
