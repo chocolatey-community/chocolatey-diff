@@ -63,7 +63,7 @@ task Pester -Depends Build {
     }
 
     Remove-Module $ENV:BHProjectName -ErrorAction SilentlyContinue -Verbose:$false
-    Import-Module -Name $outputModDir -Force -Verbose:$false
+    Import-Module -Name $sut -Force -Verbose:$false
     $testResultsXml = Join-Path -Path $outputDir -ChildPath 'testResults.xml'
     $codeCoverageXml =  Join-Path -Path $outputDir -ChildPath 'jacoco.xml'
     $sourceFiles = Get-ChildItem $sut -Recurse | Where-Object { $_.FullName -match 'ps1$' } | Select-Object -ExpandProperty FullName
