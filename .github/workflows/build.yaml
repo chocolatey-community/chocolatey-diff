@@ -13,21 +13,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install software
+      - name: Run build
         run: |
-          ./build/Install.ps1
+          ./build.ps1 -Task Test -Bootstrap
         shell: pwsh
 
-      - name: Run Pester
+      - name: Zip current release version
         run: |
-          ./build/Test.ps1
+          Set-BuildEnvironment -Force
+          $manifest = Import-PowerShellDataFile -Path $env:BHPSModuleManifest
+          $version = $manifest.ModuleVersion
+          Compress-Archive -Path out/chocolatey-diff/$version -DestinationPath chocolatey-diff.zip
         shell: pwsh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
+          name: chocolatey-diff-${{ matrix.os }}
+          path: chocolatey-diff.zip
+
+      - name: Upload pester results
+        uses: actions/upload-artifact@v2
+        with:
           name: pester-results-${{ matrix.os }}
-          path: ./*.xml
+          path: ./out/*.xml
 
       # - name: Upload coverage to Codecov
       #   uses: codecov/codecov-action@v1

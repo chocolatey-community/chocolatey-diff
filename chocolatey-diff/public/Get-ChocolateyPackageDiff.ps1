@@ -69,7 +69,7 @@ function Get-ChocolateyPackageDiff {
         throw "unable to diff without 'newPackageVersion'"
     }
 
-    
+
     $oldFileName = Join-Path $downloadLocation "${packageName}.${oldPackageVersion}.zip"
     $newFileName = Join-Path $downloadLocation "${packageName}.${newPackageVersion}.zip"
     $oldExtractPath = Join-Path $downloadLocation "${packageName}.${oldPackageVersion}"
@@ -104,7 +104,7 @@ function Get-ChocolateyPackageDiff {
             $newItem = $oldItem -replace $oldPackageVersion, $newPackageVersion
 
             if (Test-IsBinary -Path $oldItem) {
-                Write-Warning "${file} is binary, ignoring." 
+                Write-Warning "${file} is binary, ignoring."
                 Continue
             }
 
@@ -123,7 +123,7 @@ function Get-ChocolateyPackageDiff {
             $file = $newItem -replace [Regex]::Escape("${newExtractPath}")
 
             if (Test-IsBinary -Path $newItem) {
-                Write-Warning "${file} is binary, ignoring." 
+                Write-Warning "${file} is binary, ignoring."
                 Continue
             }
 

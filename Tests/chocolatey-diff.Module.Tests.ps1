@@ -1,31 +1,31 @@
 $testdir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-$global:module = 'chocolatey-diff'
+$global:MyModule = 'chocolatey-diff'
 
-$global:here = Join-Path -Resolve -Path $testdir -ChildPath "..\${module}"
+$global:here = Join-Path -Resolve -Path $testdir -ChildPath "..\${MyModule}"
 
-Describe "${module} Module Tests" {
+Describe "${MyModule} Module Tests" {
 
     Context 'Module Setup' {
-        It "has the root module ${module}.psm1" {
-            "${here}\${module}.psm1" | Should -Exist
+        It "has the root module ${MyModule}.psm1" {
+            "${here}\${MyModule}.psm1" | Should -Exist
         }
 
-        It "has the a manifest file of $module.psd1" {
-            "$here\$module.psd1" | Should -Exist
-            "$here\$module.psd1" | Should -FileContentMatch "$module.psm1"
+        It "has the a manifest file of ${MyModule}.psd1" {
+            "$here\${MyModule}.psd1" | Should -Exist
+            "$here\${MyModule}.psd1" | Should -FileContentMatch "${MyModule}.psm1"
         }
 
-        It "$module folder has private functions" {
+        It "${MyModule} folder has private functions" {
             "$here\private\*.ps1" | Should -Exist
         }
 
-        It "$module folder has public functions" {
+        It "${MyModule} folder has public functions" {
             "$here\public\*.ps1" | Should -Exist
         }
 
-        It "$module is valid PowerShell code" {
-            $psFile = Get-Content -Path "$here\$module.psm1" `
+        It "${MyModule} is valid PowerShell code" {
+            $psFile = Get-Content -Path "$here\${MyModule}.psm1" `
                 -ErrorAction Stop
             $errors = $null
             $null = [System.Management.Automation.PSParser]::Tokenize($psFile, [ref]$errors)
@@ -91,13 +91,9 @@ Describe "${module} Module Tests" {
     } # Context "Test Function $function"
 
     Context "Functions have tests" {
-        It "tests\<folder>\<function>.Tests.ps1 should exist" -TestCases $TestCases {
+        It "Tests\<folder>\<function>.Tests.ps1 should exist" -TestCases $TestCases {
             Param($function, $folder)
-            "$here\..\tests\$folder\$function.Tests.ps1" | Should -Exist
+            "$here\..\Tests\$folder\$function.Tests.ps1" | Should -Exist
         }
     }
-
-
-
-
 }
