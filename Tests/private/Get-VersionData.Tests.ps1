@@ -64,6 +64,7 @@ Describe "Get-VersionData tests" {
             } {
                 Param ($PackageName, $PackageVersion)
                 Get-VersionData -packageName $PackageName -version ([SemanticVersion]::create($PackageVersion))
+                Should -Invoke Invoke-RestMethod -Exactly 1
             }
             $versionData | Should -Not -BeNullOrEmpty
             $versionData.version | Should -Be $PackageVersion
@@ -98,6 +99,7 @@ Describe "Get-VersionData tests" {
             } {
                 Param ($PackageName, $PackageVersion)
                 Get-VersionData -packageName $PackageName -version ([SemanticVersion]::create($PackageVersion))
+                Should -Invoke Invoke-RestMethod -Exactly 1
             }
             $versionData | Should -Not -BeNullOrEmpty
             $versionData.version | Should -Be $PackageVersion
