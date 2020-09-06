@@ -1,6 +1,6 @@
 properties {
     $projectRoot = $ENV:BHProjectPath
-    if(-not $projectRoot) {
+    if (-not $projectRoot) {
         $projectRoot = $PSScriptRoot
     }
 
@@ -32,8 +32,9 @@ task Test -Depends Init, Analyze, Pester -description 'Run test suite'
 
 task Analyze -Depends Build {
     $analysis = Invoke-ScriptAnalyzer -Path $outputModVerDir -Settings ./ScriptAnalyzerSettings.psd1 -Recurse -Verbose:$false
-    $errors   = $analysis | Where-Object {$_.Severity -eq 'Error'}
-    $warnings = $analysis | Where-Object {$_.Severity -eq 'Warning'}
+    $errors = $analysis | Where-Object { $_.Severity -eq 'Error' }
+    $warnings = $analysis | Where-Object { $_.Severity -eq 'Warning' }
+    $informational = $analysis | Where-Object { $_.Severity -eq 'Information' }
 
     if (($errors.Count -eq 0) -and ($warnings.Count -eq 0)) {
         '    PSScriptAnalyzer passed without errors or warnings'
@@ -48,12 +49,17 @@ task Analyze -Depends Build {
         $warnings | Format-Table -AutoSize
         Write-Warning -Message 'One or more Script Analyzer warnings were found. These should be corrected.'
     }
+
+    if (@($informational).Count -gt 0) {
+        $informational | Format-Table -AutoSize
+        Write-Warning -Message 'One or more Script Analyzer informationals were found. These could be corrected.'
+    }
 } -description 'Run PSScriptAnalyzer'
 
 task Pester -Depends Build {
     Push-Location
     Set-Location -PassThru $outputModDir
-    if(-not $ENV:BHProjectPath) {
+    if (-not $ENV:BHProjectPath) {
         Set-BuildEnvironment -Path $PSScriptRoot\..
     }
 
@@ -65,7 +71,7 @@ task Pester -Depends Build {
     Remove-Module $ENV:BHProjectName -ErrorAction SilentlyContinue -Verbose:$false
     Import-Module -Name $sut -Force -Verbose:$false
     $testResultsXml = Join-Path -Path $outputDir -ChildPath 'testResults.xml'
-    $codeCoverageXml =  Join-Path -Path $outputDir -ChildPath 'jacoco.xml'
+    $codeCoverageXml = Join-Path -Path $outputDir -ChildPath 'jacoco.xml'
     $sourceFiles = Get-ChildItem $sut -Recurse | Where-Object { $_.FullName -match 'ps1$' } | Select-Object -ExpandProperty FullName
     $testResults = Invoke-Pester -Path $tests -PassThru -OutputFile $testResultsXml -OutputFormat NUnitXml -CodeCoverage $sourceFiles -CodeCoverageOutputFile $codeCoverageXml
 
