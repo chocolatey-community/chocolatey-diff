@@ -17,11 +17,11 @@ Describe "${MyModule} Module Tests" {
         }
 
         It "${MyModule} folder has private functions" {
-            "$here\private\*.ps1" | Should -Exist
+            "$here\Private\*.ps1" | Should -Exist
         }
 
         It "${MyModule} folder has public functions" {
-            "$here\public\*.ps1" | Should -Exist
+            "$here\Public\*.ps1" | Should -Exist
         }
 
         It "${MyModule} is valid PowerShell code" {
