@@ -1,4 +1,4 @@
-function Get-ChocolateyPackageDiff {
+﻿function Get-ChocolateyPackageDiff {
     <#
 .SYNOPSIS
     Shows the diff of two packages
@@ -112,7 +112,7 @@ function Get-ChocolateyPackageDiff {
                 Write-Warning "${file} does not exist in the new package"
             }
 
-            Write-Host "Diff for ${file}:"
+            Write-Output "Diff for ${file}:"
             Invoke-DiffTool -Path1 $oldItem -Path2 $newItem
             while ($newItems -contains $newItem) {
                 $newItems.Remove($newItem)
