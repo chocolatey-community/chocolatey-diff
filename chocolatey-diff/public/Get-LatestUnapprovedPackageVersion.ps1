@@ -5,7 +5,7 @@ function Get-LatestUnapprovedPackageVersion {
 
 .DESCRIPTION
     Uses Get-FullPackageInfo to retrieve all versions of given pacakge
-    and return first version that has one of the following status 
+    and return first version that has one of the following status
     * responded
     * updated
     * submitted
@@ -16,7 +16,7 @@ function Get-LatestUnapprovedPackageVersion {
 
 .EXAMPLE
     PS C:\> Get-LatestUnapprovedPackageVersion -PackageId Chocolatey
-    returns the version of the latets responded, updated, submitted or "ready" 
+    returns the version of the latets responded, updated, submitted or "ready"
     package with Id "Chocolatey".
 #>
     [CmdletBinding()]

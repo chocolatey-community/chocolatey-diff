@@ -33,7 +33,7 @@ function Get-ChocolateyPackage {
     >
     Get-ChocolateyPackage -packageName chocolatey -packageVersion 0.10.15
 
-#>    
+#>
     param(
         [parameter(Mandatory = $true, Position = 0)][string] $packageName,
         [parameter(Mandatory = $true, Position = 1)][string] $packageVersion,
