@@ -34,7 +34,7 @@ Describe "${MyModule} Module Tests" {
 
     } # Context 'Module Setup'
 
-    $folders = @('private', 'public')
+    $folders = @('Private', 'Public')
 
     $TestCases = @()
 

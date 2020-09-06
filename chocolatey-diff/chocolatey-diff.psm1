@@ -2,10 +2,11 @@
 # Include file names that start with capital letters, ignore others
 $ScriptRoot = Split-Path $MyInvocation.MyCommand.Definition
 
-$Public = @( Get-ChildItem -Path $ScriptRoot\public\*.ps1 -ErrorAction SilentlyContinue )
-$Private = @( Get-ChildItem -Path $ScriptRoot\private\*.ps1 -ErrorAction SilentlyContinue )
+$Classes = @( Get-ChildItem -Path $ScriptRoot\Classes\*.ps1 -ErrorAction SilentlyContinue )
+$Public = @( Get-ChildItem -Path $ScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue )
+$Private = @( Get-ChildItem -Path $ScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue )
 
-foreach ($import in @($Public + $Private)) {
+foreach ($import in @($Classes + $Public + $Private)) {
   Try {
     . $import.fullname
   }

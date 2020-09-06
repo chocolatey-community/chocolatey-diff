@@ -1,6 +1,3 @@
-# basically stolen from Kim - https://github.com/AdmiringWorm
-# Apache-2.0 License
-
 class SemanticVersion {
     [version]$VersionOnly;
     [string]$Raw;
