@@ -1,3 +1,5 @@
+# Based on the script from https://github.com/poshbotio/PoshBot
+
 properties {
     $projectRoot = $ENV:BHProjectPath
     if (-not $projectRoot) {
