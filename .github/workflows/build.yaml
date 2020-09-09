@@ -4,7 +4,7 @@ name: build
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -18,19 +18,19 @@ jobs:
           ./build.ps1 -Task Test -Bootstrap
         shell: pwsh
 
-      - name: Zip current release version
-        run: |
-          Set-BuildEnvironment -Force
-          $manifest = Import-PowerShellDataFile -Path $env:BHPSModuleManifest
-          $version = $manifest.ModuleVersion
-          Compress-Archive -Path out/chocolatey-diff/$version -DestinationPath chocolatey-diff.zip
-        shell: pwsh
+      # - name: Zip current release version
+      #   run: |
+      #     Set-BuildEnvironment -Force
+      #     $manifest = Import-PowerShellDataFile -Path $env:BHPSModuleManifest
+      #     $version = $manifest.ModuleVersion
+      #     Compress-Archive -Path out/chocolatey-diff/$version -DestinationPath chocolatey-diff.zip
+      #   shell: pwsh
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: chocolatey-diff-${{ matrix.os }}
-          path: chocolatey-diff.zip
+      # - name: Upload artifacts
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: chocolatey-diff-${{ matrix.os }}
+      #     path: chocolatey-diff.zip
 
       - name: Upload pester results
         uses: actions/upload-artifact@v2
@@ -38,9 +38,9 @@ jobs:
           name: pester-results-${{ matrix.os }}
           path: ./out/*.xml
 
-      # - name: Upload coverage to Codecov
-      #   uses: codecov/codecov-action@v1
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     file: ./jacoco-results.xml
-      #     fail_ci_if_error: true # optional (default = false)
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./out/jacoco.xml
+          fail_ci_if_error: true # optional (default = false)

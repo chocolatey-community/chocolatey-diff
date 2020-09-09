@@ -114,8 +114,9 @@
 
             Write-Output "Diff for ${file}:"
             Invoke-DiffTool -Path1 $oldItem -Path2 $newItem
-            while ($newItems -contains $newItem) {
-                $newItems.Remove($newItem)
+
+            while (($item = $newItems -eq $newItem | Select-Object -First 1)) {
+                $newItems.Remove($item)
             }
         }
 

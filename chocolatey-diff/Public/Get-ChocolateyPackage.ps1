@@ -50,20 +50,20 @@ function Get-ChocolateyPackage {
         New-Item -Path $downloadLocation -ItemType Directory | Out-Null
     }
 
-    $extension = If ($useZipExtension) { "zip" } Else { "nupkg" }
+    $extension = $useZipExtension ? "zip" : "nupkg"
 
     $fileName = Join-Path $downloadLocation "${packageName}.${packageVersion}.${extension}"
 
     if (Test-Path $fileName -PathType Leaf) {
-        Write-Warning "File already exists, will be deleted"
-        Remove-Item $fileName -Force
+        Write-Verbose "File already exists, will be deleted"
+        Remove-Item $fileName -Force -ErrorAction SilentlyContinue
     }
 
     $repoBaseUrl = Get-ChocolateyRepositoryUrl
     $downloadUrl = "${repoBaseUrl}/package/${packageName}/${packageVersion}"
 
     #Download the file
-    Write-Warning "Downloading file from ${downloadUrl}"
+    Write-Verbose "Downloading file from ${downloadUrl}"
     Invoke-WebRequest -Uri $downloadUrl -OutFile $fileName
 
     $ProgressPreference = $currentProgressPreference
