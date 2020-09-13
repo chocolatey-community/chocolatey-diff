@@ -11,6 +11,8 @@ Describe "Get-ChocolateyPackageDiff" {
         Mock 'Test-IsBinary' { $false } -ModuleName 'chocolatey-diff' -ParameterFilter { $Path -like 'TestDrive:\chocolatey*' }
         Mock 'Get-ChildItem' { $true } -ModuleName 'chocolatey-diff' -ParameterFilter { $Exclude -And $Path }
         Mock 'Write-Warning' { $true } -ModuleName 'chocolatey-diff'
+        Mock 'Get-Content' { $true } -ModuleName 'chocolatey-diff'
+        Mock 'Compare-Object' { '' } -ModuleName 'chocolatey-diff'
         Mock 'Get-ChildItem' {
             @(
                 @{
@@ -58,11 +60,13 @@ Describe "Get-ChocolateyPackageDiff" {
                 Should -Invoke Get-LatestApprovedPackageVersion -Exactly 1 -ModuleName 'chocolatey-diff'
                 Should -Invoke Get-LatestUnapprovedPackageVersion -Exactly 1 -ModuleName 'chocolatey-diff'
                 Should -Invoke Get-ChocolateyPackage -Exactly 2 -ModuleName 'chocolatey-diff'
-                Should -Invoke Invoke-DiffTool -Exactly 2 -ModuleName 'chocolatey-diff'
+                Should -Invoke Invoke-DiffTool -Exactly 0 -ModuleName 'chocolatey-diff'
+                Should -Invoke Get-Content -Exactly 4 -ModuleName 'chocolatey-diff'
+                Should -Invoke Compare-Object -Exactly 2 -ModuleName 'chocolatey-diff'
                 Should -Invoke Test-IsBinary -Exactly 4 -ModuleName 'chocolatey-diff'
                 Should -Invoke Expand-Archive -Exactly 2
                 Should -Invoke Remove-Item -Exactly 4
-                Should -Invoke Write-Warning -Exactly 3
+                Should -Invoke Write-Warning -Exactly 2
             }
         }
     }
@@ -89,7 +93,7 @@ Describe "Get-ChocolateyPackageDiff" {
         )
         #endregion Discovery
 
-        It 'Diff for package <packageName> with an approved and unapproved version' -TestCases $testCases {
+        It 'Diff for package <packageName> with an approved and unapproved version compareFolder' -TestCases $testCases {
             InModuleScope 'chocolatey-diff' -Parameters @{
                 packageName = $packageName
             } {
@@ -100,9 +104,53 @@ Describe "Get-ChocolateyPackageDiff" {
                 Should -Invoke Get-LatestUnapprovedPackageVersion -Exactly 1 -ModuleName 'chocolatey-diff'
                 Should -Invoke Get-ChocolateyPackage -Exactly 2 -ModuleName 'chocolatey-diff'
                 Should -Invoke Invoke-DiffTool -Exactly 1 -ModuleName 'chocolatey-diff'
+                Should -Invoke Get-Content -Exactly 0 -ModuleName 'chocolatey-diff'
+                Should -Invoke Compare-Object -Exactly 0 -ModuleName 'chocolatey-diff'
                 Should -Invoke Expand-Archive -Exactly 2
                 Should -Invoke Remove-Item -Exactly 4
-                Should -Invoke Write-Warning -Exactly 1
+                Should -Invoke Write-Warning -Exactly 0
+            }
+        }
+    }
+
+    Context 'With UseDiffTool tests' {
+
+        BeforeAll {
+            Mock 'Get-LatestApprovedPackageVersion' { $approvedVersion } -ModuleName 'chocolatey-diff'
+            Mock 'Get-LatestUnapprovedPackageVersion' { $unapprovedVersion } -ModuleName 'chocolatey-diff'
+            Mock 'Test-Path' { $true } -ParameterFilter { $PathType -eq 'Leaf' } -ModuleName 'chocolatey-diff'
+        }
+
+        #region Discovery
+        $testCases = @(
+            @{
+                packageName       = 'MyPackage'
+                approvedVersion   = @{
+                    Version = '0.1.0'
+                }
+                unapprovedVersion = @{
+                    Version = '0.2.0'
+                }
+            }
+        )
+        #endregion Discovery
+
+        It 'Diff for package <packageName> with an approved and unapproved version useDiffTool' -TestCases $testCases {
+            InModuleScope 'chocolatey-diff' -Parameters @{
+                packageName = $packageName
+            } {
+                Param ($packageName)
+                Get-ChocolateyPackageDiff -packageName $packageName -useDiffTool
+
+                Should -Invoke Get-LatestApprovedPackageVersion -Exactly 1 -ModuleName 'chocolatey-diff'
+                Should -Invoke Get-LatestUnapprovedPackageVersion -Exactly 1 -ModuleName 'chocolatey-diff'
+                Should -Invoke Get-ChocolateyPackage -Exactly 2 -ModuleName 'chocolatey-diff'
+                Should -Invoke Invoke-DiffTool -Exactly 2 -ModuleName 'chocolatey-diff'
+                Should -Invoke Get-Content -Exactly 0 -ModuleName 'chocolatey-diff'
+                Should -Invoke Compare-Object -Exactly 0 -ModuleName 'chocolatey-diff'
+                Should -Invoke Expand-Archive -Exactly 2
+                Should -Invoke Remove-Item -Exactly 4
+                Should -Invoke Write-Warning -Exactly 2
             }
         }
     }
@@ -129,7 +177,7 @@ Describe "Get-ChocolateyPackageDiff" {
         )
         #endregion Discovery
 
-        It 'Diff for package <packageName> with an approved and unapproved version' -TestCases $testCases {
+        It 'Diff for package <packageName> with an approved and unapproved version keepFiles' -TestCases $testCases {
             InModuleScope 'chocolatey-diff' -Parameters @{
                 packageName = $packageName
             } {
@@ -139,9 +187,53 @@ Describe "Get-ChocolateyPackageDiff" {
                 Should -Invoke Get-LatestApprovedPackageVersion -Exactly 1 -ModuleName 'chocolatey-diff'
                 Should -Invoke Get-LatestUnapprovedPackageVersion -Exactly 1 -ModuleName 'chocolatey-diff'
                 Should -Invoke Get-ChocolateyPackage -Exactly 2 -ModuleName 'chocolatey-diff'
-                Should -Invoke Invoke-DiffTool -Exactly 2 -ModuleName 'chocolatey-diff'
+                Should -Invoke Invoke-DiffTool -Exactly 0 -ModuleName 'chocolatey-diff'
+                Should -Invoke Get-Content -Exactly 4 -ModuleName 'chocolatey-diff'
+                Should -Invoke Compare-Object -Exactly 2 -ModuleName 'chocolatey-diff'
                 Should -Invoke Expand-Archive -Exactly 2
                 Should -Invoke Remove-Item -Exactly 0
+                Should -Invoke Write-Warning -Exactly 2
+            }
+        }
+    }
+
+    Context 'With ignoreExpectedChanges tests' {
+
+        BeforeAll {
+            Mock 'Get-LatestApprovedPackageVersion' { $approvedVersion } -ModuleName 'chocolatey-diff'
+            Mock 'Get-LatestUnapprovedPackageVersion' { $unapprovedVersion } -ModuleName 'chocolatey-diff'
+            Mock 'Test-Path' { $true } -ParameterFilter { $PathType -eq 'Leaf' } -ModuleName 'chocolatey-diff'
+        }
+
+        #region Discovery
+        $testCases = @(
+            @{
+                packageName       = 'MyPackage'
+                approvedVersion   = @{
+                    Version = '0.1.0'
+                }
+                unapprovedVersion = @{
+                    Version = '0.2.0'
+                }
+            }
+        )
+        #endregion Discovery
+
+        It 'Diff for package <packageName> with an approved and unapproved version ignoreExpectedChanges' -TestCases $testCases {
+            InModuleScope 'chocolatey-diff' -Parameters @{
+                packageName = $packageName
+            } {
+                Param ($packageName)
+                Get-ChocolateyPackageDiff -packageName $packageName -ignoreExpectedChanges
+
+                Should -Invoke Get-LatestApprovedPackageVersion -Exactly 1 -ModuleName 'chocolatey-diff'
+                Should -Invoke Get-LatestUnapprovedPackageVersion -Exactly 1 -ModuleName 'chocolatey-diff'
+                Should -Invoke Get-ChocolateyPackage -Exactly 2 -ModuleName 'chocolatey-diff'
+                Should -Invoke Invoke-DiffTool -Exactly 0 -ModuleName 'chocolatey-diff'
+                Should -Invoke Get-Content -Exactly 4 -ModuleName 'chocolatey-diff'
+                Should -Invoke Compare-Object -Exactly 2 -ModuleName 'chocolatey-diff'
+                Should -Invoke Expand-Archive -Exactly 2
+                Should -Invoke Remove-Item -Exactly 4
                 Should -Invoke Write-Warning -Exactly 2
             }
         }
@@ -180,11 +272,13 @@ Describe "Get-ChocolateyPackageDiff" {
                 Should -Invoke Get-LatestApprovedPackageVersion -Exactly 1 -ModuleName 'chocolatey-diff'
                 Should -Invoke Get-LatestUnapprovedPackageVersion -Exactly 1 -ModuleName 'chocolatey-diff'
                 Should -Invoke Get-ChocolateyPackage -Exactly 2 -ModuleName 'chocolatey-diff'
-                Should -Invoke Invoke-DiffTool -Exactly 2 -ModuleName 'chocolatey-diff'
+                Should -Invoke Invoke-DiffTool -Exactly 0 -ModuleName 'chocolatey-diff'
+                Should -Invoke Get-Content -Exactly 4 -ModuleName 'chocolatey-diff'
+                Should -Invoke Compare-Object -Exactly 2 -ModuleName 'chocolatey-diff'
                 Should -Invoke Test-IsBinary -Exactly 4 -ModuleName 'chocolatey-diff'
                 Should -Invoke Expand-Archive -Exactly 2
                 Should -Invoke Remove-Item -Exactly 4
-                Should -Invoke Write-Warning -Exactly 4
+                Should -Invoke Write-Warning -Exactly 3
             }
         }
     }
@@ -227,7 +321,7 @@ Describe "Get-ChocolateyPackageDiff" {
                 Should -Invoke Test-IsBinary -Exactly 3 -ModuleName 'chocolatey-diff'
                 Should -Invoke Expand-Archive -Exactly 2
                 Should -Invoke Remove-Item -Exactly 4
-                Should -Invoke Write-Warning -Exactly 4
+                Should -Invoke Write-Warning -Exactly 3
             }
         }
     }

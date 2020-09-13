@@ -19,10 +19,14 @@
     The name of the package to Compare
 
 .PARAMETER OldPackageVersion
-    The old version of the package to Compare
+    OPTIONAL - The old version of the package to Compare
 
 .PARAMETER NewPackageVersion
-    The new version of the package to Compare
+    OPTIONAL - The new version of the package to Compare
+
+.PARAMETER IgnoreExpectedChanges
+    OPTIONAL - This switch will ignore expected changes
+    in the package files.
 
 .PARAMETER DownloadLocation
     OPTIONAL - The folder to download the file to.
@@ -36,18 +40,37 @@
     OPTIONAL - Pass in directories to compare instead of
     files when calling Diff Tools.
 
+.PARAMETER useDiffTool
+    OPTIONAL - Use an external diff tool instead of Compare-Object
+
 .EXAMPLE
     >
     Get-ChocolateyPackageDiff -packageName chocolatey -oldPackageVersion 0.10.14 -newPackageVersion 0.10.15
 
 #>
+    [cmdletbinding(DefaultParameterSetName='Default')]
     param(
-        [parameter(Mandatory = $true, Position = 0)][string] $packageName,
-        [parameter(Mandatory = $false, Position = 1)][string] $oldPackageVersion,
-        [parameter(Mandatory = $false, Position = 2)][string] $newPackageVersion,
-        [parameter(Mandatory = $false)][string] $downloadLocation = $(Get-TempPath),
-        [parameter(Mandatory = $false)][switch] $keepFiles = $false,
-        [parameter(Mandatory = $false)][switch] $compareFolder = $false
+        [parameter(Mandatory = $true, Position = 0, ParameterSetName='Default')]
+        [parameter(Mandatory = $true, Position = 0, ParameterSetName='DiffTool')]
+            [string] $packageName,
+        [parameter(Mandatory = $false, Position = 1, ParameterSetName='Default')]
+        [parameter(Mandatory = $false, Position = 1, ParameterSetName='DiffTool')]
+            [string] $oldPackageVersion,
+        [parameter(Mandatory = $false, Position = 2, ParameterSetName='Default')]
+        [parameter(Mandatory = $false, Position = 2, ParameterSetName='DiffTool')]
+            [string] $newPackageVersion,
+        [parameter(Mandatory = $false, ParameterSetName='Default')]
+        [parameter(Mandatory = $false, ParameterSetName='DiffTool')]
+            [string] $downloadLocation = $(Get-TempPath),
+        [parameter(Mandatory = $false, ParameterSetName='Default')]
+        [parameter(Mandatory = $false, ParameterSetName='DiffTool')]
+            [switch] $keepFiles = $false,
+        [parameter(Mandatory = $false, 	ParameterSetName='Default')]
+            [switch] $ignoreExpectedChanges = $false,
+        [parameter(Mandatory = $false, ParameterSetName='DiffTool')]
+            [switch] $compareFolder = $false,
+        [parameter(Mandatory = $false, ParameterSetName='DiffTool')]
+            [switch] $useDiffTool = $false
     )
     $currentProgressPreference = $ProgressPreference
     $ProgressPreference = 'SilentlyContinue'
@@ -68,7 +91,6 @@
     if (-Not $newPackageVersion) {
         throw "unable to diff without 'newPackageVersion'"
     }
-
 
     $oldFileName = Join-Path $downloadLocation "${packageName}.${oldPackageVersion}.zip"
     $newFileName = Join-Path $downloadLocation "${packageName}.${newPackageVersion}.zip"
@@ -93,8 +115,7 @@
 
         Write-Verbose "Diff for root directories"
         Invoke-DiffTool -Path1 $oldExtractPath -Path2 $newExtractPath
-    }
-    else {
+    } else {
         [System.Collections.ArrayList]$oldItems = (Get-ChildItem -Exclude $ignoreList -Path $oldExtractPath | Get-ChildItem -Recurse -File | Select-Object -Expand FullName)
         [System.Collections.ArrayList]$newItems = (Get-ChildItem -Exclude $ignoreList -Path $newExtractPath | Get-ChildItem -Recurse -File | Select-Object -Expand FullName)
 
@@ -113,7 +134,23 @@
             }
 
             Write-Output "Diff for ${file}:"
-            Invoke-DiffTool -Path1 $oldItem -Path2 $newItem
+            if ($useDiffTool) {
+                Invoke-DiffTool -Path1 $oldItem -Path2 $newItem
+            } else {
+                $oldItemData = Get-Content $oldItem
+                $newItemData = Get-Content $newItem
+                $Data = Compare-Object -ReferenceObject $oldItemData -DifferenceObject $newItemData -PassThru
+
+                if ($ignoreExpectedChanges) {
+                    $regex = Get-ChangesRegexForFile($oldItem)
+                    if (![string]::IsNullOrEmpty($regex)) {
+                        foreach ($re in $regex) {
+                            $Data = $Data | Select-String -Pattern $re -NotMatch
+                        }
+                    }
+                }
+                $Data
+            }
 
             while (($item = $newItems -eq $newItem | Select-Object -First 1)) {
                 $newItems.Remove($item)
@@ -133,7 +170,7 @@
     }
 
     if (-Not $keepFiles) {
-        Write-Warning "Deleting downloaded files"
+        Write-Verbose "Deleting downloaded files"
         Remove-Item $oldFileName -Force -ErrorAction SilentlyContinue
         Remove-Item $newFileName -Force -ErrorAction SilentlyContinue
         Remove-Item $oldExtractPath -Force -Recurse -ErrorAction SilentlyContinue

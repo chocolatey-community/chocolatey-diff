@@ -1,21 +1,27 @@
-[![build](https://github.com/chocolatey-community/chocodiff/workflows/build/badge.svg)](https://github.com/chocolatey-community/chocodiff/actions?query=workflow%3Abuild)
-
 # Chocolatey Diff utility
+
+[![build](https://github.com/chocolatey-community/chocodiff/workflows/build/badge.svg)](https://github.com/chocolatey-community/chocodiff/actions?query=workflow%3Abuild)
 
 This Powershell module allows you to view the diff of two package versions.
 
-## Requirements - diffutils
+## Optional - diffutils
 
-This software requires you to have some diff-tool (such as kdiff3 or meld) package installed:
+This software allows you to use some diff-tool (such as diff or meld):
 You can always specify the the diff-tool to use manually by utilizing the `env:difftool` variable.
 
-**On Windows:**
+### On Windows
+
+NOTE: Required for `-useDiffTool` parameter
 
 ```powershell
 choco install diffutils --source=cygwin
 ```
 
-**On Linux/Mac** ensure at least `diff` is installed and available through PATH environment variable.
+### On Linux/Mac
+
+ensure at least `diff` is installed and available through PATH environment variable.
+
+### Optional
 
 If you want to use a different diff-tool, set `env:difftool`:
 
@@ -29,36 +35,35 @@ By default, `C:\tools\cygwin\bin\diff.exe` is used on Windows OS and `diff` on U
 
 ## Example / Usage
 
+### Syntax
+
+The Get-ChocolateyPacageDiff Syntax:
+
+```powershell
+Get-ChocolateyPackageDiff [-packageName] <string> [[-oldPackageVersion] <string>] [[-newPackageVersion] <string>] [-downloadLocation <string>] [-keepFiles] [-ignoreExpectedChanges] [<CommonParameters>]
+
+Get-ChocolateyPackageDiff [-packageName] <string> [[-oldPackageVersion] <string>] [[-newPackageVersion] <string>] [-downloadLocation <string>] [-keepFiles] [-compareFolder] [-useDiffTool] [<CommonParameters>]
+```
+
 ### Example: exact source and target version given
 
 ```powershell
 Import-Module .\chocolatey-diff\chocolatey-diff.psm1
-D:\Projects\chocolatey-diff [master ≡ +5 ~0 -0 !]> Get-ChocolateyPackageDiff -packageName grafana -oldPackageVersion 7.1.0 -newPackageVersion 7.1.1
-WARNING: Downloading file from https://chocolatey.org/api/v2/package/grafana/7.1.0
-WARNING: Downloading file from https://chocolatey.org/api/v2/package/grafana/7.1.1
+PS > Get-ChocolateyPackageDiff -packageName grafana -oldPackageVersion 7.1.0 -newPackageVersion 7.1.1
 Diff for \legal\LICENSE.txt:
 Diff for \legal\VERIFICATION.txt:
-9c9
-<   32-Bit: <https://dl.grafana.com/oss/release/grafana-7.1.0.windows-amd64.zip>
----
->   32-Bit: <https://dl.grafana.com/oss/release/grafana-7.1.1.windows-amd64.zip>
-15c15
-<   checksum32: 84961388ACDB8134E29558EF80AD989178BE95098808FB75DDD0AD3268BE570C
----
->   checksum32: DE586C6232CE9026DF097AFE3AF843F0097AB578409BE634F5BA4420FF3E786E
+  32-Bit: <https://dl.grafana.com/oss/release/grafana-7.1.1.windows-amd64.zip>
+  checksum32: DE586C6232CE9026DF097AFE3AF843F0097AB578409BE634F5BA4420FF3E786E
+  32-Bit: <https://dl.grafana.com/oss/release/grafana-7.1.0.windows-amd64.zip>
+  checksum32: 84961388ACDB8134E29558EF80AD989178BE95098808FB75DDD0AD3268BE570C
 Diff for \tools\chocolateyinstall.ps1:
-8c8
-<   file           = "$toolsdir\grafana-7.1.0.windows-amd64.zip"
----
->   file           = "$toolsdir\grafana-7.1.1.windows-amd64.zip"
+  file           = "$toolsdir\grafana-7.1.1.windows-amd64.zip"
+  file           = "$toolsdir\grafana-7.1.0.windows-amd64.zip"
 WARNING: \tools\grafana-7.1.0.windows-amd64.zip is binary, ignoring.
 Diff for \grafana.nuspec:
-5c5
-<     <version>7.1.0</version>
----
->     <version>7.1.1</version>
+    <version>7.1.1</version>
+    <version>7.1.0</version>
 WARNING: \tools\grafana-7.1.1.windows-amd64.zip is binary, ignoring.
-WARNING: Deleting downloaded files
 ```
 
 ### Example: single package ID as input
@@ -67,25 +72,21 @@ Latest approved and unapproved versions are selected automatically.
 
 ```powershell
 Import-Module .\chocolatey-diff\chocolatey-diff.psm1
-chocolatey-diff on  gh8_versiondetect [✘!?] took 44s
-❯ Get-ChocolateyPackageDiff elasticsearch
-WARNING: Downloading file from https://chocolatey.org/api/v2//package/elasticsearch/6.7.1
-WARNING: Downloading file from https://chocolatey.org/api/v2//package/elasticsearch/7.8.1
+PS > Get-ChocolateyPackageDiff elasticsearch
 Diff for \tools\chocolateyBeforeModify.ps1:
-1c1
-< elasticsearch-service.bat stop
----
-> 2a3,10
->
-> $toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-> $unPath = Join-Path $toolsDir 'Uninstall-ChocolateyPath.psm1'
-> Import-Module $unPath
->
-> $version      = "7.8.1"
-> $binPath = Join-Path $toolsDir "elasticsearch-$($version)\bin"
-> Uninstall-ChocolateyPath $binPath 'Machine'
-...
-...
-WARNING: The \tools\Uninstall-ChocolateyPath.psm1 is new. Manual verification required
-WARNING: Deleting downloaded files
+$version      = "7.8.1"
+$version      = "7.8.0"
+Diff for \tools\chocolateyInstall.ps1:
+$url          = 'https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.8.1-windows-x86_64.zip'
+$checksum     = '800720331e64f091f87bb5ca1755c948c75718cb3723497d861b28fab2067e7a'
+$version      = "7.8.1"
+$url          = 'https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.8.0-windows-x86_64.zip'
+$checksum     = 'e6e8160fcb0837cf2d5602e9c5ecb637b9cb46b7e333dfd681f65a235eed85d4'
+$version      = "7.8.0"
+Diff for \tools\Uninstall-ChocolateyPath.psm1:
+Diff for \elasticsearch.nuspec:
+    <version>7.8.1</version>
+    <releaseNotes>https://www.elastic.co/guide/en/elasticsearch/reference/7.8/release-notes-7.8.1.html</releaseNotes>
+    <version>7.8.0</version>
+    <releaseNotes>https://www.elastic.co/guide/en/elasticsearch/reference/7.8/release-notes-7.8.0.html</releaseNotes>
 ```
