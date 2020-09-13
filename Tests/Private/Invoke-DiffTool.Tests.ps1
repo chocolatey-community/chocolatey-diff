@@ -16,36 +16,38 @@ Describe "Invoke-DiffTool tests" {
         #region Discovery
         $testCases = @(
             @{
-                Difftool = '';
-                Platform = 'Win32NT';
+                Difftool = ''
+                Platform = 'Win32NT'
+                Expected = "C:\tools\cygwin\bin\diff.exe"
+            }
+            @{
+                Difftool = 'C:\Program Files\KDiff3\bin\diff.exe'
+                Platform = 'Win32NT'
                 Expected = "C:\Program Files\KDiff3\bin\diff.exe"
             }
             @{
-                Difftool = 'C:\Program Files\KDiff3\bin\diff3.exe';
-                Platform = 'Win32NT';
-                Expected = "C:\Program Files\KDiff3\bin\diff3.exe"
-            }
-            @{
-                Difftool = '';
-                Platform = 'Unix';
+                Difftool = ''
+                Platform = 'Unix'
                 Expected = "diff"
             }
         )
         #endregion Discovery
 
         BeforeAll {
-            Mock 'Start-Process' { $true } -ParameterFilter {
-                $NoNewWindow -and $Wait
-            } -ModuleName 'chocolatey-diff'
+            Mock 'Start-Process' { $true } -ParameterFilter { $NoNewWindow -and $Wait -and $FilePath -eq $Expected } -ModuleName 'chocolatey-diff'
+            Mock 'Write-Warning' { $true } -ModuleName 'chocolatey-diff'
         }
 
         It "Checks if Invoke-DiffTool for <Platform> calls <Expected>" -TestCases $testCases {
-            Param($Platform, $Expected, $Difftool)
+            Param ($Platform, $Expected, $Difftool, $Regex)
             $env:difftool = $Difftool
             $PSVersionTable.Platform = $Platform
-            InModuleScope 'chocolatey-diff' {
+            InModuleScope 'chocolatey-diff' -Parameters @{
+                Expected = $Expected
+            } {
+                Param ($Regex, $Expected)
                 Invoke-DiffTool -Path1 "/path/to/my/file" -Path2 "/path/to/my/file2"
-                Should -Invoke Start-Process -Exactly 1 -ParameterFilter { $FilePath -eq $Expected }
+                Should -Invoke Start-Process -Exactly 1
             }
         }
     }

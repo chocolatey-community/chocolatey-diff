@@ -4,7 +4,7 @@
 
 This Powershell module allows you to view the diff of two package versions.
 
-## Requirements - diff tool
+## Requirements - diffutils
 
 This software requires you to have some diff-tool (such as kdiff3 or meld) package installed:
 You can always specify the the diff-tool to use manually by utilizing the `env:difftool` variable.
@@ -12,10 +12,10 @@ You can always specify the the diff-tool to use manually by utilizing the `env:d
 **On Windows:**
 
 ```powershell
-choco install kdiff3
+choco install diffutils --source=cygwin
 ```
 
-**On Linux/Mac** ensure at least `diff` and `unzip` are installed and available through PATH environment variable.
+**On Linux/Mac** ensure at least `diff` is installed and available through PATH environment variable.
 
 If you want to use a different diff-tool, set `env:difftool`:
 
@@ -25,7 +25,7 @@ Import-Module .\chocolatey-diff\chocolatey-diff.psm1
 Get-ChocolateyPackageDiff ...
 ```
 
-By default, `C:\Program Files\KDiff3\bin\diff.exe` is used on Windows OS and `diff` on Unix-like systems.
+By default, `C:\tools\cygwin\bin\diff.exe` is used on Windows OS and `diff` on Unix-like systems.
 
 ## Example / Usage
 
