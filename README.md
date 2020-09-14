@@ -4,6 +4,36 @@
 
 This Powershell module allows you to view the diff of two package versions.
 
+## Required - Powershell 6.0+
+
+### On Windows
+
+Easiest:
+
+```powershell
+choco install powershell-core
+```
+
+Other options:
+
+See this [document](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows?view=powershell-7) from Microsoft to install POSH on Windows
+
+### On Mac
+
+Easiest:
+
+```sh
+brew cask install powershell
+```
+
+Other options:
+
+See this [document](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7) from Microsoft to install POSH on macOS
+
+### On Linux
+
+See this [document](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7) from Microsoft to install POSH on Linux.
+
 ## Optional - diffutils
 
 This software allows you to use some diff-tool (such as diff or meld):
