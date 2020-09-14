@@ -33,7 +33,7 @@ Copyright = '(c) 2020 Maurice Kevenaar. All rights reserved.'
 Description = 'A diff tool to aid Chocolatey moderators with their moderation process'
 
 # Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = '5.0.0'
+PowerShellVersion = '6.0'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
