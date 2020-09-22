@@ -18,7 +18,7 @@ Describe "Invoke-DiffTool tests" {
             @{
                 Difftool = ''
                 Platform = 'Win32NT'
-                Expected = "C:\tools\cygwin\bin\diff.exe"
+                Expected = "C:\Program Files\Git\usr\bin\diff.exe"
             }
             @{
                 Difftool = 'C:\Program Files\KDiff3\bin\diff.exe'

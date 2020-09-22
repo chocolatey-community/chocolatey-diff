@@ -44,7 +44,7 @@ You can always specify the the diff-tool to use manually by utilizing the `env:d
 NOTE: Required for `-useDiffTool` parameter
 
 ```powershell
-choco install diffutils --source=cygwin
+choco install git
 ```
 
 ### On Linux/Mac
@@ -61,7 +61,7 @@ Import-Module .\chocolatey-diff\chocolatey-diff.psm1
 Get-ChocolateyPackageDiff ...
 ```
 
-By default, `C:\tools\cygwin\bin\diff.exe` is used on Windows OS and `diff` on Unix-like systems.
+By default, `C:\Program Files\Git\usr\bin\diff.exe` is used on Windows OS and `diff` on Unix-like systems.
 
 ## Example / Usage
 

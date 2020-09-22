@@ -31,7 +31,7 @@ function Invoke-DiffTool {
     } elseif (Test-IsUnix) {
         "diff"
     } else {
-        "C:\tools\cygwin\bin\diff.exe"
+        "C:\Program Files\Git\usr\bin\diff.exe"
     }
     Write-Verbose "using difftool: $diffTool"
     Start-Process -NoNewWindow -Wait -FilePath $diffTool -ArgumentList "${Path1}", "${Path2}"
