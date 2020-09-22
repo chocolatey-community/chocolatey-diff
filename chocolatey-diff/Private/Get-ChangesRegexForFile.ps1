@@ -23,7 +23,7 @@ function Get-ChangesRegexForFile {
         [Parameter(Mandatory)][string] $FileName
     )
 
-    $knwonExtensions = @{
+    $knownExtensions = @{
         '.nuspec' = @(
             "<version>.*<\/version>",
             "<releaseNotes>.*<\/releaseNotes>"
@@ -55,8 +55,8 @@ function Get-ChangesRegexForFile {
 
     $exactFileName = Split-Path -Path $FileName -Leaf
 
-    if ($knwonExtensions.ContainsKey($extension)) {
-        return $knwonExtensions[$extension]
+    if ($knownExtensions.ContainsKey($extension)) {
+        return $knownExtensions[$extension]
     } elseif ($knownFiles.ContainsKey($exactFileName)) {
         return $knownFiles[$exactFileName]
     }
