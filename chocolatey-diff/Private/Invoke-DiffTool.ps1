@@ -6,7 +6,7 @@ function Invoke-DiffTool {
 .DESCRIPTION
     This function uses `$env:difftool` to create the diff of two files,
     if the difftool environment variable is not set, it will default
-    to `diff` on Unix OS and "diff.exe" from KDiff3 in its default
+    to `diff` on Unix OS and "diff.exe" from cygwin in its default
     install location on Windows OS.
 
 .PARAMETER Path1
@@ -23,18 +23,15 @@ function Invoke-DiffTool {
 #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)]
-        [string] $Path1,
-
-        [Parameter(Mandatory)]
-        [string] $Path2
+        [Parameter(Mandatory)][string] $Path1,
+        [Parameter(Mandatory)][string] $Path2
     )
     $diffTool = if ($env:difftool) {
         $env:difftool
     } elseif (Test-IsUnix) {
         "diff"
     } else {
-        "C:\Program Files\KDiff3\bin\diff.exe"
+        "C:\Program Files\Git\usr\bin\diff.exe"
     }
     Write-Verbose "using difftool: $diffTool"
     Start-Process -NoNewWindow -Wait -FilePath $diffTool -ArgumentList "${Path1}", "${Path2}"
