@@ -13,11 +13,6 @@
 		"davidanson.vscode-markdownlint",
 		"ryanluker.vscode-coverage-gutters"
 	],
-	"build": {
-		"args": {
-			"UPGRADE_PACKAGES": "true"
-		}
-	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Uncomment the next line to run commands after the container is created. This gets run in bash which is why we call `pwsh`.
