@@ -50,6 +50,21 @@ Describe "Get-FullPackageInfo tests" {
             $pkgInfo.Id | Should -BeExactly $PackageName
             $pkgInfo.Versions | Should -HaveCount $PackageVersionData.Count
         }
+
+        It 'Fetch Full package info the second time for <PackageName> package <PackageVersions>' -TestCases $testCases {
+            Param($PackageName, $PackageVersions, $PackageVersionData)
+            $pkgInfo = InModuleScope 'chocolatey-diff' -Parameters @{
+                PackageName = $PackageName
+            } {
+                Param ($PackageName)
+                Get-FullPackageInfo -PackageId $PackageName
+                Should -Invoke Invoke-RestMethod -Exactly 0
+                Should -Invoke Get-VersionData -Exactly 0
+            }
+            $pkgInfo | Should -Not -BeNullOrEmpty
+            $pkgInfo.Id | Should -BeExactly $PackageName
+            $pkgInfo.Versions | Should -HaveCount $PackageVersionData.Count
+        }
     }
 }
 
