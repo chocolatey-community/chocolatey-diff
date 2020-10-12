@@ -13,13 +13,3 @@ COPY library-scripts/*.sh /tmp/library-scripts/
 RUN apt-get update \
     && /bin/bash /tmp/library-scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
-
-USER vscode
-
-# [Optional] Uncomment this section to install additional packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
-RUN pwsh  -Command 'Install-Package PSScriptAnalyzer -Force -Confirm:$false' \
-    && pwsh -Command 'Install-Package PSake -Force -Confirm:$false' \
-    && pwsh -Command 'Install-Package BuildHelpers -Force -Confirm:$false' \
-    && pwsh -Command 'Install-Package Pester -Force -Confirm:$false'
