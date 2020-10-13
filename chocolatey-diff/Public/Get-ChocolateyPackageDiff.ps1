@@ -48,29 +48,29 @@
     Get-ChocolateyPackageDiff -packageName chocolatey -oldPackageVersion 0.10.14 -newPackageVersion 0.10.15
 
 #>
-    [cmdletbinding(DefaultParameterSetName='Default')]
+    [cmdletbinding(DefaultParameterSetName = 'Default')]
     param(
-        [parameter(Mandatory = $true, Position = 0, ParameterSetName='Default')]
-        [parameter(Mandatory = $true, Position = 0, ParameterSetName='DiffTool')]
-            [string] $packageName,
-        [parameter(Mandatory = $false, Position = 1, ParameterSetName='Default')]
-        [parameter(Mandatory = $false, Position = 1, ParameterSetName='DiffTool')]
-            [string] $oldPackageVersion,
-        [parameter(Mandatory = $false, Position = 2, ParameterSetName='Default')]
-        [parameter(Mandatory = $false, Position = 2, ParameterSetName='DiffTool')]
-            [string] $newPackageVersion,
-        [parameter(Mandatory = $false, ParameterSetName='Default')]
-        [parameter(Mandatory = $false, ParameterSetName='DiffTool')]
-            [string] $downloadLocation = $(Get-TempPath),
-        [parameter(Mandatory = $false, ParameterSetName='Default')]
-        [parameter(Mandatory = $false, ParameterSetName='DiffTool')]
-            [switch] $keepFiles = $false,
-        [parameter(Mandatory = $false, 	ParameterSetName='Default')]
-            [switch] $ignoreExpectedChanges = $false,
-        [parameter(Mandatory = $false, ParameterSetName='DiffTool')]
-            [switch] $compareFolder = $false,
-        [parameter(Mandatory = $false, ParameterSetName='DiffTool')]
-            [switch] $useDiffTool = $false
+        [parameter(Mandatory = $true, Position = 0, ParameterSetName = 'Default')]
+        [parameter(Mandatory = $true, Position = 0, ParameterSetName = 'DiffTool')]
+        [string] $packageName,
+        [parameter(Mandatory = $false, Position = 1, ParameterSetName = 'Default')]
+        [parameter(Mandatory = $false, Position = 1, ParameterSetName = 'DiffTool')]
+        [string] $oldPackageVersion,
+        [parameter(Mandatory = $false, Position = 2, ParameterSetName = 'Default')]
+        [parameter(Mandatory = $false, Position = 2, ParameterSetName = 'DiffTool')]
+        [string] $newPackageVersion,
+        [parameter(Mandatory = $false, ParameterSetName = 'Default')]
+        [parameter(Mandatory = $false, ParameterSetName = 'DiffTool')]
+        [string] $downloadLocation = $(Get-TempPath),
+        [parameter(Mandatory = $false, ParameterSetName = 'Default')]
+        [parameter(Mandatory = $false, ParameterSetName = 'DiffTool')]
+        [switch] $keepFiles = $false,
+        [parameter(Mandatory = $false, ParameterSetName = 'Default')]
+        [switch] $ignoreExpectedChanges = $false,
+        [parameter(Mandatory = $false, ParameterSetName = 'DiffTool')]
+        [switch] $compareFolder = $false,
+        [parameter(Mandatory = $false, ParameterSetName = 'DiffTool')]
+        [switch] $useDiffTool = $false
     )
     $currentProgressPreference = $ProgressPreference
     $ProgressPreference = 'SilentlyContinue'
@@ -106,6 +106,19 @@
     #Extract the package files
     Expand-Archive -Path $oldFileName -DestinationPath $oldExtractPath -Force
     Expand-Archive -Path $newFileName -DestinationPath $newExtractPath -Force
+
+    foreach ($path in @($oldExtractPath; $newExtractPath)) {
+        # Temporary workaround until mocking and unit tests
+        # are figured out.
+        if (!(Test-Path $path)) { continue; }
+
+        $metaDestination = Join-Path $path "binary-data.txt"
+        if (Test-Path $metaDestination) {
+            Remove-Item $metaDestination
+        }
+
+        Get-PackageBinaryData -packageDirectory $path | Out-File -Encoding utf8 -FilePath $metaDestination
+    }
 
     if ($compareFolder) {
         # We need to remove files that should not be compared
