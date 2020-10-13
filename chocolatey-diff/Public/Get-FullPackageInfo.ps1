@@ -19,24 +19,32 @@ function Get-FullPackageInfo {
         [string] $PackageId
     )
 
-    $pkgInfo = @{
-        Id       = $PackageId
-        Url      = "$(Get-ChocolateyPackageGalleryUrl)/${$PackageId}"
-        Versions = @()
-    }
+    if (-not $script:pkgInfo -or $script:pkgInfo.Id -notmatch $PackageId) {
+        Write-Verbose "New package or package ID is changed"
 
-    $url = "$(Get-ChocolateyRepositoryUrl)/package-versions/${PackageId}?includePreRelease=true"
-    [array]$jsonVersions = Invoke-RestMethod -Uri $url -UseBasicParsing | Select-Object -Unique
-    $apiVersions = $jsonVersions | ForEach-Object { [SemanticVersion]::create($_) } | Sort-Object -Property VersionOnly, Tag -Descending | Select-Object -Unique
+        $script:pkgInfo = @{
+            Id       = $PackageId
+            Url      = "$(Get-ChocolateyPackageGalleryUrl)/${$PackageId}"
+            Versions = @()
+        }
 
-    foreach ($v in $apiVersions) {
-        $vInfo = Get-VersionData -packageName $PackageId -version $([SemanticVersion]::create($v))
-        $pkgInfo.Versions += @{
-            Version = $vInfo.version
-            Listed  = $vInfo.listed
-            Status  = $vInfo.status
+        $url = "$(Get-ChocolateyRepositoryUrl)/package-versions/${PackageId}?includePreRelease=true"
+        [array]$jsonVersions = Invoke-RestMethod -Uri $url -UseBasicParsing | Select-Object -Unique
+        $apiVersions = $jsonVersions |
+            ForEach-Object { [SemanticVersion]::create($_) } |
+            Sort-Object -Property VersionOnly, Tag -Descending |
+            Select-Object -Unique
+
+        foreach ($v in $apiVersions) {
+            $vInfo = Get-VersionData -packageName $PackageId -version $v
+            $script:pkgInfo.Versions += @{
+                Version = $vInfo.version
+                Listed  = $vInfo.listed
+                Status  = $vInfo.status
+            }
         }
     }
 
-    Write-Output $pkgInfo
+    Write-Verbose "Returning full package info."
+    Write-Output $script:pkgInfo
 }
