@@ -108,28 +108,16 @@
     Expand-Archive -Path $newFileName -DestinationPath $newExtractPath -Force
 
     foreach ($path in @($oldExtractPath; $newExtractPath)) {
-        # Only because of unit tests
+        # Temporary workaround until mocking and unit tests
+        # are figured out.
         if (!(Test-Path $path)) { continue; }
 
         $metaDestination = Join-Path $path "binary-data.txt"
-        Push-Location -Path $path
         if (Test-Path $metaDestination) {
             Remove-Item $metaDestination
         }
 
-        Get-ChildItem -Path $path -Recurse -File | ? { Test-IsBinary -Path $_.FullName } | % {
-            $item = Get-Item $_.FullName
-            $result = @{
-                path           = Resolve-Path $_.FullName -Relative
-                checksum       = Get-FileHash $_.FullName -Algorithm SHA256 | % Hash
-                fileVersion    = $item.VersionInfo.FileVersion
-                productVersion = $item.VersionInfo.ProductVersion
-            }
-
-            $result
-        } | Out-File -Encoding utf8 -FilePath $metaDestination
-
-        Pop-Location
+        Get-PackageBinaryData -packageDirectory $path | Out-File -Encoding utf8 -FilePath $metaDestination
     }
 
     if ($compareFolder) {
