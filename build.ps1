@@ -28,6 +28,7 @@ if ($Bootstrap.IsPresent) {
     }
     Import-Module -Name PSDepend -Verbose:$false
     Invoke-PSDepend -Path './requirements.psd1' -Install -Import -Force -WarningAction SilentlyContinue
+    dotnet tool restore
 }
 
 # Execute psake task(s)
