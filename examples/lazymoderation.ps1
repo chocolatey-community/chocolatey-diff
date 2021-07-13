@@ -31,16 +31,6 @@ if ($useDiffTool) {
 
 $packageIgnoreList = @()
 foreach ($pkg in $packages) {
-    $dArgs = @{
-        PackageName       = $pkg.id
-        NewPackageVersion = $pkg.version
-        Verbose           = $VerbosePreference
-    }
-    if ($useDiffTool) {
-        $dArgs.useDiffTool = $useDiffTool
-        $dArgs.CompareFolder = $true
-    }
-
     "`n === {0} === " -f $pkg.id
 
     if ($packageIgnoreList -contains [string]$pkg.id) {
@@ -59,6 +49,16 @@ foreach ($pkg in $packages) {
     }
 
     try {
+        $dArgs = @{
+            PackageName       = $pkg.id
+            NewPackageVersion = $pkg.version
+            Verbose           = $VerbosePreference
+        }
+        if ($useDiffTool) {
+            $dArgs.useDiffTool = $useDiffTool
+            $dArgs.CompareFolder = $true
+        }
+
         $diffObj = Get-ChocolateyPackageDiff @dArgs
         if (-not $useDiffTool) {
             $diffObj
