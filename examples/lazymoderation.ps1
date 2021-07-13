@@ -2,13 +2,16 @@
 param(
     [Parameter(Mandatory = $false)]
     [AllowEmptyString()]
-    [string] $DiffTool
+    [string] $DiffTool,
+
+    [Parameter(Mandatory = $false)]
+    [int]$ModQueuePage = 1
 )
 
 Import-Module (Join-Path $PSScriptRoot "../chocolatey-diff/chocolatey-diff.psm1")
 
 $packageBaseUri = "https://community.chocolatey.org/packages"
-$queueUri = "$packageBaseUri/?q=&moderatorQueue=true&moderationStatus=ready-status&prerelease=false&sortOrder=package-download-count"
+$queueUri = "$packageBaseUri/?q=&moderatorQueue=true&moderationStatus=ready-status&prerelease=false&sortOrder=package-download-count&page=$ModQueuePage"
 
 $pkgsMatcher = [regex]"href\s*=\s*[`"|']\/packages\/(.+)\/(\d.+)#status[`"|']"
 
